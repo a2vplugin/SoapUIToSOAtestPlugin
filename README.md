@@ -2,9 +2,6 @@
 
 Use the SOAtest Converter Plugin to convert SoapUI projects into SOAtest projects.
 
-## Known Issues
-1. Converter does not support any SoapUI model names that contain a forward slash "/"
-
 ## Installation
 1. Build the project and export to a java jar file
 1. Open SoapUI Pro 5.1.2
@@ -86,3 +83,6 @@ Use the SOAtest Converter Plugin to convert SoapUI projects into SOAtest project
 * __Data Source__
    * Supports excel data sources
    * Other data sources convert to placeholder excel data sources
+   
+## Known Issues
+1. Converter does not support any SoapUI model names that contain a forward slash "/"
