@@ -1,16 +1,16 @@
-# SOAtest Convertor Plugin
+# SOAtest Converter Plugin
 
-Use the SOAtest Convertor Plugin to convert SoapUI projects into SOAtest projects.
+Use the SOAtest Converter Plugin to convert SoapUI projects into SOAtest projects.
 
 ## Known Issues
-1. Convertor does not support any SoapUI model names that contain a forward slash "/"
+1. Converter does not support any SoapUI model names that contain a forward slash "/"
 
 ## Installation
 1. Build the project and export to a java jar file
 1. Open SoapUI Pro 5.1.2
 1. In the tool bar, click "Configures SoapUI Plugins". A dialog will appear
 <br/>![](https://raw.githubusercontent.com/a2vplugin/SoapUIToSOAtestPlugin/master/readme-resources/ConfiguresSoapUIPlugins.png "Click 'Configures SoapUI Plugins'")
-1. Click "Load plugin from file" and select the SOAtest Converter Plugin jar file. Once successfully loaded you will see the SOAtest Convertor Plugin in the list of installed plugins.
+1. Click "Load plugin from file" and select the SOAtest Converter Plugin jar file. Once successfully loaded you will see the SOAtest Converter Plugin in the list of installed plugins.
 <br/>![](https://raw.githubusercontent.com/a2vplugin/SoapUIToSOAtestPlugin/master/readme-resources/LoadPluginFromFile.png "Entry shown when successfully loaded")
 1. In the tool bar, click "Sets Global SoapUI Preference" to configure global properties
 <br/>![](https://raw.githubusercontent.com/a2vplugin/SoapUIToSOAtestPlugin/master/readme-resources/SetGlobalSoapUIPreferences.png "Click 'Sets Global SoapUI Preferences'")
