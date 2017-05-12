@@ -1,6 +1,6 @@
 # SOAtest Converter Plugin
 
-Use the SOAtest Converter Plugin to convert SoapUI projects into SOAtest projects.
+Use the SOAtest Converter Plugin to convert SoapUI projects into SOAtest projects. This Plugin requires SoapUI Pro and has been validated against version 5.1.2.
 
 ## Installation
 1. Build the project and export to a java jar file
