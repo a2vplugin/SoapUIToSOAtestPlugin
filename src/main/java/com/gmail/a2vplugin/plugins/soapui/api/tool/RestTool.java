@@ -59,6 +59,7 @@ public class RestTool extends AbstractTool {
         return getUrl() + path;
     }
 
+    //get info from soapui restRequest and then new a rest tool in Soatest.
     public void create(RestRequest restRequest, EnvTool envTool, String stepName) throws ResponseException {
         getMonitor().setProgress(1, restRequest.getName());
         ObjectFactory factory = new ObjectFactory();

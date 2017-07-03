@@ -22,6 +22,8 @@ public class EnvTool extends AbstractTool {
 
     List<Variable> variables = new ArrayList<Variable>();
 
+//    private static final Logger logger = SoapUICustomPluginLogger.getLogger(EnvTool.class);
+
     public EnvTool(AbstractTool parent) {
         super(parent);
     }
@@ -100,6 +102,7 @@ public class EnvTool extends AbstractTool {
             environmentRequest.setParent(parent);
             {
                 parent.setId(getParentId());
+                LogUtil.info( "envTool create(): \t" +getParentId());
             }
             Environment environment = factory.createEnvironment();
             environmentRequest.setLocal(environment);

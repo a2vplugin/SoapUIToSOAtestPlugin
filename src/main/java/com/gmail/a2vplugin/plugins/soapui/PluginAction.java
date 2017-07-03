@@ -29,14 +29,21 @@ public class PluginAction extends AbstractSoapUIAction<WsdlProject> {
             LogUtil.error("URLException" + e1.getMessage());
         }
 
-        ProgressDialog dialog = new ProgressDialog(PluginMessages.DIALOG_CREATE_TITLE,
+        final ProgressDialog dialog = new ProgressDialog(PluginMessages.DIALOG_CREATE_TITLE,
                 PluginMessages.DIALOG_CREATE_LABEL, 1, "......", true);
 
         dialog.run(new Worker() {
+            Thread current;
+            boolean running = true;
+
             public Object construct(XProgressMonitor monitor) {
-                LogUtil.info("start to convert...");
-                SoatestToolUtil.create(url, monitor, project);
-                LogUtil.info("converting stoped.");
+                current = Thread.currentThread();
+                if(running) {
+                    LogUtil.info("start to convert...");
+//                LogUtil.getLogger(PluginAction.class).info("start to convert printed by logger...");
+                    SoatestToolUtil.create(url, monitor, project);
+                    LogUtil.info("converting stoped.");
+                }
                 return null;
             }
 
@@ -45,8 +52,14 @@ public class PluginAction extends AbstractSoapUIAction<WsdlProject> {
             }
 
             public boolean onCancel() {
+                running = false;
+                if (current != null) {
+                    LogUtil.warn("work intterupted");
+                    current.interrupt();
+                    dialog.dispose();
+                }
                 LogUtil.info("monitor canceled");
-                return false;
+                return true;
             }
 
         });

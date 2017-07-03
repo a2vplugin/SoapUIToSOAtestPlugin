@@ -76,12 +76,14 @@ public class ExUtil {
         return s;
     }
 
+    //replace the string content
     public static String filterDataSource(String content, String datasource) {
         if (datasource == null || datasource.length() == 0) {
             return content;
         }
         String s = "${" + datasource + "#";
         content = content.replace(s, "${");
+        LogUtil.info(Thread.currentThread().getStackTrace()+"\t"+content);
         return content;
     }
 

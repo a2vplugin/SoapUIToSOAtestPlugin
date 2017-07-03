@@ -1,10 +1,11 @@
 package com.gmail.a2vplugin.plugins.soapui.api.tool;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-
+import com.eviware.soapui.SoapUI;
+import com.eviware.soapui.model.propertyexpansion.PropertyExpansionUtils;
+import com.eviware.x.dialogs.XProgressMonitor;
+import com.gmail.a2vplugin.plugins.exceptions.ResponseException;
+import com.gmail.a2vplugin.plugins.soapui.api.LogUtil;
+import net.sf.json.JSONObject;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
@@ -14,13 +15,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import com.eviware.soapui.SoapUI;
-import com.eviware.soapui.model.propertyexpansion.PropertyExpansionUtils;
-import com.eviware.x.dialogs.XProgressMonitor;
-import com.gmail.a2vplugin.plugins.exceptions.ResponseException;
-import com.gmail.a2vplugin.plugins.soapui.api.LogUtil;
-
-import net.sf.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 public abstract class AbstractTool {
     private String url = null;
@@ -28,6 +26,7 @@ public abstract class AbstractTool {
     private XProgressMonitor monitor = null;
     private String id = null;
     private String datasource = "";
+    public static String languageSet=null;
 
     public String getDatasource() {
         return datasource;
@@ -49,18 +48,30 @@ public abstract class AbstractTool {
 
     public abstract String getPostPath();
 
+//    private static final Logger LOGGER = SoapUICustomPluginLogger.getLogger(AbstractTool.class);
+
     public AbstractTool(String url, String parentId, XProgressMonitor monitor) {
         this.url = url;
         this.parentId = parentId;
         this.monitor = monitor;
     }
 
+    /**
+     * @param parent
+     */
     public AbstractTool(AbstractTool parent) {
         this.parent = parent;
         this.datasource = parent.getDatasource();
         this.url = parent.getUrl();
+
+        String languageProperty = PropertyExpansionUtils.getGlobalProperty("soatest.api.language");
+        languageSet = getLanguageSet(languageProperty);
+        if (languageSet == null) {
+            LogUtil.error("language is null....");
+        }
+
         if (parent instanceof TstTool) {
-            this.parentId = parent.getId() + "/Test Suite";
+            this.parentId = parent.getId() + languageSet;
         } else if (parent instanceof SoapTool) {
             this.parentId = parent.getId() + "/Response SOAP Envelope";
         } else if (parent instanceof RestTool) {
@@ -101,6 +112,20 @@ public abstract class AbstractTool {
         return parentId;
     }
 
+    public String getLanguageSet(String language) {
+        switch (language) {
+            case "English":
+                return "/Test Suite";
+            case "Chinese":
+                return "/测试套件";
+            case "Japanese":
+                return "/テスト スイート";
+            default:
+        //        LogUtil.info("default is English, need to set the correct language property!!");
+                return "/Test Suite";
+        }
+    }
+
     public void setParentId(String parentId) {
         this.parentId = parentId;
     }
@@ -119,9 +144,14 @@ public abstract class AbstractTool {
                     new UsernamePasswordCredentials(username, password));
         }
 
+
         HttpPost postRequest = new HttpPost(this.getPostPath());
+//        LOGGER.info("postRequest: "+postRequest);
+//        LogUtil.info("request in " + Thread.currentThread().getStackTrace() + request);
         JSONObject json = JSONObject.fromObject(request);
-        String content = json.toString();
+        String content = json.toString();//this place change the utf-8 format and re-encode
+
+//        LOGGER.info("json content before replace: "+content);
 
         if (this instanceof SoapTool) {
             content = content.replace("\"parameterized\":null,", "");
@@ -146,11 +176,18 @@ public abstract class AbstractTool {
             content = content.replace("\"parameterized\":null,", "");
         }
 
+        LogUtil.debug("content msg: " + content);
+//        LOGGER.info("content after replace: " + content);
+
         StringEntity input;
         try {
-            input = new StringEntity(content);
+//            input = new StringEntity(content,"utf-8");
+//            LogUtil.info("String Entity: "+input.getContent())
+            //this StringEntity encoding must be set as utf-8
+            input = new StringEntity(content, "utf-8");
             input.setContentType("application/json");
             postRequest.setEntity(input);
+
 
         } catch (UnsupportedEncodingException e1) {
             SoapUI.log("UnsupportedEncodingException !");
@@ -158,17 +195,22 @@ public abstract class AbstractTool {
 
         HttpResponse response = null;
         StatusLine sl = null;
+
         response = httpClient.execute(postRequest);
         sl = response.getStatusLine();
+
+//        LOGGER.info("executed response: " + response +"\t"  + sl);
 
         StringBuffer msg = new StringBuffer();
         BufferedReader br = null;
         try {
-            br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+            //the bufferReader must set correct encoding as UTF-8
+            br = new BufferedReader(new InputStreamReader((response.getEntity().getContent()), "utf-8"));
             String output = null;
             while ((output = br.readLine()) != null) {
                 msg.append(output);
             }
+            LogUtil.debug("response msg: " + msg.toString());
 
         } catch (IOException e) {
             SoapUI.log("print error'response time 's exception! not a soaui excption:" + e.getMessage());
@@ -187,6 +229,7 @@ public abstract class AbstractTool {
             return ((K) JSONObject.toBean(JSONObject.fromObject(msg.toString()), resp));
 
         }
+
 
     }
 

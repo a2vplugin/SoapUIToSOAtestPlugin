@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.eviware.soapui.SoapUI;
 import com.eviware.soapui.impl.rest.RestMethod;
 import com.eviware.soapui.impl.rest.RestRequest;
 import com.eviware.soapui.impl.rest.RestResource;
@@ -51,6 +52,7 @@ public class SoatestToolUtil {
     public static void create(String url, XProgressMonitor monitor, Project project) {
 
         String projectName = project.getName();
+        
         if (ValidateName.validate(projectName)) {
             LogUtil.info(projectName + ":Project's name  catains / ,change to & ;  :  to $ ");
             projectName = ValidateName.changeName(projectName);
@@ -68,20 +70,27 @@ public class SoatestToolUtil {
         }
 
         for (TestSuite tSuite : project.getTestSuiteList()) {
-            LogUtil.info("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTtestSuite's size" + tSuite.getTestCaseList().size());
+            LogUtil.info("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTtestSuite's size \t" + tSuite.getTestCaseList().size());
             String tsuName = tSuite.getName();
+            LogUtil.info("tsuName:\t"+tsuName);
             if (ValidateName.validate(tsuName)) {
                 LogUtil.info(tsuName + " tSuiteName contains / change to +! ");
                 tsuName = ValidateName.changeName(tsuName);
                 LogUtil.info(tsuName);
             }
             String subParentId = parentId + "/" + tsuName;
+            LogUtil.info( "testSuite subParentId: \t"+subParentId);
             CacheTool cacheTool = new CacheTool();
             cacheTool.tstTool = new TstTool(url, subParentId, monitor);
 
             for (int i = 0; i < tSuite.getTestCaseList().size(); i++) {
                 TestCase tCase = tSuite.getTestCaseList().get(i);
+//                LogUtil.debug("tstTool in TestSuite: \t"+cacheTool.tstTool.getId());
                 cacheTool.envTool = new EnvTool(cacheTool.tstTool);
+//                LogUtil.debug("envTool in TestSuite: \t"+cacheTool.envTool.getParentId());
+                String envId = subParentId + "/" + tCase.getName()+".tst" + AbstractTool.languageSet;
+//                LogUtil.debug("envId: "+envId);
+                cacheTool.envTool.setParentId(envId);
                 cacheTool.collectDataSource(tCase);
                 try {
                     cacheTool.tstTool.create(tCase);

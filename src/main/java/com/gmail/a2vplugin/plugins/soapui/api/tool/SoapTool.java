@@ -1,6 +1,7 @@
 package com.gmail.a2vplugin.plugins.soapui.api.tool;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,7 @@ import com.gmail.a2vplugin.api.tools.soapclients.messages.TransportType;
 import com.gmail.a2vplugin.plugins.exceptions.ResponseException;
 import com.gmail.a2vplugin.plugins.soapui.api.ExUtil;
 import com.gmail.a2vplugin.plugins.soapui.api.LogUtil;
+import sun.rmi.runtime.Log;
 
 public class SoapTool extends AbstractTool {
     private final String path = "/parasoftapi/v1/tools/soapClients";
@@ -184,7 +186,24 @@ public class SoapTool extends AbstractTool {
             req.setLiteral(literal);
             {
                 literal.setType(LiteralType.text);
-                literal.setText(ExUtil.filterDataSource(request.getRequestContent(), getDatasource()));
+
+//                LogUtil.info("request encoding" + request.getEncoding());
+
+//                LogUtil.info("request content in SoapTool:　" + request.getRequestContent());
+                String text = ExUtil.filterDataSource(request.getRequestContent(), getDatasource());
+
+                try {
+//                    literal.setText(new String(text.getBytes(request.getEncoding())));
+                    literal.setText(text);
+//                    LogUtil.info();
+//                    LogUtil.info("set text: "+ new String(text.getBytes(request.getEncoding())));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+//                LogUtil.info(Thread.currentThread().getStackTrace()+"\n"+text);
+//                LogUtil.info("liter.getText() " + literal.getText());
+
+
                 literal.setMimeType("application/xml");
             }
 

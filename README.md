@@ -14,6 +14,7 @@ Use the SOAtest Converter Plugin to convert SoapUI projects into SOAtest project
 <br/>![](https://raw.githubusercontent.com/a2vplugin/SoapUIToSOAtestPlugin/master/readme-resources/GlobalProperties.png "Choose 'Global Properties'")
 1. Configure the following properties to allow the plugin to communicate with your SOAtest server
    * soatest.api.url: Points to your SOAtest server. For example: `http://192.168.24.95:9080`
+   * soatest.api.language: Must set to the correct value, such as English, Japanese, Chinese, one of them which depends on the SOAtest version you are using.
    * soatest.api.log.level: Indicates the level of logging in the "SoapUI Log" view. Possible values are error, warn, info, and debug
    * soatest.api.username: Your SOAtest server user name
    * soatest.api.password: Your SOAtest server password
